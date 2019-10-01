@@ -4,6 +4,7 @@
     <string name="paper">Paper</string>
     <string name="scissors">scissors</string>
     <string name="welcome">Welcome</string>
+    <string name="vs">V.S.</string>
     <string name="instructions">Instructions: select rock, paper, or scissor to play</string>
     <string name="user_win">You win!</string>
     <string name="computer_win">Computer wins!</string>
