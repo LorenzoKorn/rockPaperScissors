@@ -1,8 +1,11 @@
 package com.example.rockpapersciccors.controllers
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import com.example.rockpapersciccors.R
 import com.example.rockpapersciccors.enums.Choices
 import com.example.rockpapersciccors.models.Game
@@ -56,5 +59,24 @@ class MainActivity : AppCompatActivity() {
             Choices.SCISSORS.value -> return Choices.SCISSORS
         }
         return null
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        return when (item?.itemId) {
+            R.id.action_open_history -> {
+                startActivity(
+                    Intent(this@MainActivity, History::class.java)
+                )
+                finish()
+                true
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
     }
 }

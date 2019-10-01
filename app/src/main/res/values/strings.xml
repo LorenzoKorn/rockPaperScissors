@@ -11,4 +11,6 @@
     <string name="draw">Draw!</string>
     <string name="computer">Computer</string>
     <string name="user">You</string>
+    <string name="open_history">Open history</string>
+    <string name="delete_history">Delete history</string>
 </resources>
