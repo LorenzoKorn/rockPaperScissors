@@ -7,8 +7,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rockpapersciccors.R
+import com.example.rockpapersciccors.enums.Users
 
-class GameAdapter(var games: List<Game>): RecyclerView.Adapter<GameAdapter.ViewHolder>() {
+class GameAdapter(private var games: List<Game>): RecyclerView.Adapter<GameAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.game_result, parent, false)
@@ -31,8 +32,8 @@ class GameAdapter(var games: List<Game>): RecyclerView.Adapter<GameAdapter.ViewH
         private val userImage: ImageView = itemView.findViewById(R.id.user_image)
 
         fun bind(game: Game) {
-            result.text = game.winner
-            date.text = game.date.toString()
+            result.text = game.winMessage
+            date.text = game.date
             computerImage.setImageResource(game.computerImage)
             userImage.setImageResource(game.userImage)
         }

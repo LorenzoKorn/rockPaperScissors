@@ -2,7 +2,6 @@ package com.example.rockpapersciccors.controllers
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -12,16 +11,24 @@ import com.example.rockpapersciccors.models.GameAdapter
 import kotlinx.android.synthetic.main.activity_history.*
 import android.view.MenuItem
 import com.example.rockpapersciccors.R
+import com.example.rockpapersciccors.database.GameRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class History : AppCompatActivity() {
 
     private val games = arrayListOf<Game>()
     private val gameAdapter = GameAdapter(games)
+    private lateinit var gameRepository: GameRepository
+    private var mainScope = CoroutineScope(Dispatchers.Main)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_history)
+        gameRepository = GameRepository(this)
 
         init()
     }
@@ -37,6 +44,31 @@ class History : AppCompatActivity() {
                 this@History,
                 DividerItemDecoration.VERTICAL
             )
+        )
+
+        getGameHistory()
+    }
+
+    private fun getGameHistory() {
+        CoroutineScope(Dispatchers.Main).launch {
+            val history = withContext(Dispatchers.IO) {
+                gameRepository.getHistory()
+            }
+
+            this@History.games.clear()
+            this@History.games.addAll(history)
+            this@History.gameAdapter.notifyDataSetChanged()
+        }
+    }
+
+    private fun deleteHistory() {
+        CoroutineScope(
+            mainScope.launch {
+                withContext(Dispatchers.IO) {
+                    gameRepository.deleteHistory()
+
+                }
+            }
         )
     }
 
@@ -58,10 +90,5 @@ class History : AppCompatActivity() {
             }
             else -> return super.onOptionsItemSelected(item)
         }
-    }
-
-    private fun deleteHistory() {
-        // delete all records in db
-        Log.i("TEST", "Delete")
     }
 }

@@ -7,16 +7,23 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import com.example.rockpapersciccors.R
+import com.example.rockpapersciccors.database.GameRepository
 import com.example.rockpapersciccors.enums.Choices
+import com.example.rockpapersciccors.enums.Users
 import com.example.rockpapersciccors.models.Game
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.*
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var gameRepository: GameRepository
+    private var mainScope = CoroutineScope(Dispatchers.Main)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        gameRepository = GameRepository(this)
 
         initButtons()
     }
@@ -38,16 +45,31 @@ class MainActivity : AppCompatActivity() {
 
         computer_img_choice.setImageResource(computerChoice!!.image)
         user_img_choice.setImageResource(userChoice.image)
+        lateinit var winner: Users
 
         when {
-            userChoice.defeats == computerChoice.value -> {
-                match_result.text = getString(R.string.user_win)
-            }
-            computerChoice.defeats == userChoice.value -> {
-                match_result.text = getString(R.string.computer_win)
-            }
-            userChoice.value == computerChoice.value -> {
-                match_result.text = getString(R.string.draw)
+            userChoice.defeats == computerChoice.value -> winner = Users.USER
+            computerChoice.defeats == userChoice.value -> winner = Users.COMPUTER
+            userChoice.value == computerChoice.value -> winner = Users.NONE
+        }
+
+        match_result.text = getString(winner.winMessage)
+
+        storeGameResult(userChoice, computerChoice, winner)
+    }
+
+    private fun storeGameResult(userChoice: Choices, computerChoice: Choices, winner: Users) {
+        mainScope.launch {
+            val game = Game(
+                userChoice.image,
+                computerChoice.image,
+                winner.id,
+                getString(winner.winMessage),
+                Date().toString()
+            )
+
+            withContext(Dispatchers.IO) {
+                gameRepository.insertGame(game)
             }
         }
     }
