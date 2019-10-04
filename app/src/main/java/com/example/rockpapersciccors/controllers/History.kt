@@ -1,5 +1,6 @@
 package com.example.rockpapersciccors.controllers
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -66,10 +67,11 @@ class History : AppCompatActivity() {
             mainScope.launch {
                 withContext(Dispatchers.IO) {
                     gameRepository.deleteHistory()
-
                 }
             }
         )
+        this@History.games.clear()
+        this@History.gameAdapter.notifyDataSetChanged()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -81,6 +83,9 @@ class History : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item?.itemId) {
             android.R.id.home -> {
+                startActivity(
+                    Intent(this@History, MainActivity::class.java)
+                )
                 finish()
                 true
             }

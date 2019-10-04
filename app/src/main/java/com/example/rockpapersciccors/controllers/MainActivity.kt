@@ -19,6 +19,9 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var gameRepository: GameRepository
     private var mainScope = CoroutineScope(Dispatchers.Main)
+    private var wins: Int = 0
+    private var losses: Int = 0
+    private var draws: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,6 +29,7 @@ class MainActivity : AppCompatActivity() {
         gameRepository = GameRepository(this)
 
         initButtons()
+        initScore()
     }
 
     private fun initButtons() {
@@ -40,6 +44,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun initScore() {
+        mainScope.launch {
+            withContext(Dispatchers.IO) {
+                wins = gameRepository.getWins()
+                losses = gameRepository.getLosses()
+                draws = gameRepository.getDraws()
+            }
+        }
+    }
+
     private fun play(userChoice: Choices) {
         val computerChoice: Choices? = getComputerChoice()
 
@@ -48,14 +62,28 @@ class MainActivity : AppCompatActivity() {
         lateinit var winner: Users
 
         when {
-            userChoice.defeats == computerChoice.value -> winner = Users.USER
-            computerChoice.defeats == userChoice.value -> winner = Users.COMPUTER
-            userChoice.value == computerChoice.value -> winner = Users.NONE
+            userChoice.defeats == computerChoice.value -> {
+                winner = Users.USER
+                wins += 1
+            }
+            computerChoice.defeats == userChoice.value -> {
+                winner = Users.COMPUTER
+                losses += 1
+            }
+            userChoice.value == computerChoice.value -> {
+                winner = Users.NONE
+                draws += 1
+            }
         }
 
         match_result.text = getString(winner.winMessage)
 
         storeGameResult(userChoice, computerChoice, winner)
+        showUserStats()
+    }
+
+    private fun showUserStats() {
+        user_stats.text = getString(R.string.match_result, wins, losses, draws)
     }
 
     private fun storeGameResult(userChoice: Choices, computerChoice: Choices, winner: Users) {

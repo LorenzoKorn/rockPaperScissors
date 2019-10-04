@@ -13,4 +13,5 @@
     <string name="user">You</string>
     <string name="open_history">Open history</string>
     <string name="delete_history">Delete history</string>
+    <string name="match_result">Wins: %1$d Losses: %2$d Draw: %3$d</string>
 </resources>
